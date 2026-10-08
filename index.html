@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Would you date me? 💕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-deep:#8a2c52;
+    --pink-mid:#e8618f;
+    --pink-soft:#f8a5c2;
+    --pink-light:#ffd9e8;
+    --bear:#f78fb3;
+    --bear-inner:#ffd9e8;
+    --ink:#5a2038;
+    --white:#fffafc;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+  html,body{ height:100%; }
+
+  body{
+    font-family:"Quicksand","Comic Sans MS","Segoe UI",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 20%, #ffe6f0 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, #ffd0e2 0%, transparent 50%),
+      linear-gradient(160deg,#ffd9e8 0%, #ffc2d8 45%, #ffb0cd 100%);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---------- floating background hearts ---------- */
+  .bg-hearts{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .bg-heart{
+    position:absolute; bottom:-60px; font-size:26px; opacity:.35;
+    animation:floatUp linear infinite;
+    filter:saturate(1.1);
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) rotate(0deg) scale(.8); opacity:0; }
+    10%{ opacity:.4; }
+    100%{ transform:translateY(-115vh) rotate(30deg) scale(1.2); opacity:0; }
+  }
+
+  /* ---------- pages ---------- */
+  .page{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding:36px 18px 60px;
+    text-align:center;
+  }
+  .page.active{ display:flex; animation:pageIn .6s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes pageIn{
+    from{ opacity:0; transform:translateY(26px) scale(.98); }
+    to{ opacity:1; transform:none; }
+  }
+
+  /* ---------- bear ---------- */
+  .bear-wrap{ position:relative; width:230px; height:250px; }
+  .bear{
+    width:100%; height:100%;
+    animation:bob 3s ease-in-out infinite;
+    transform-origin:50% 90%;
+    cursor:pointer;
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) rotate(-1deg); }
+    50%{ transform:translateY(-10px) rotate(1deg); }
+  }
+  .bear.happy{ animation:bounce .55s ease-in-out infinite; }
+  @keyframes bounce{
+    0%,100%{ transform:translateY(0) scale(1); }
+    40%{ transform:translateY(-18px) scale(1.05,.96); }
+    70%{ transform:translateY(0) scale(.97,1.03); }
+  }
+  .bear.shiver{ animation:shiver .35s ease-in-out; }
+  @keyframes shiver{
+    0%,100%{ transform:translateX(0) rotate(0); }
+    25%{ transform:translateX(-7px) rotate(-3deg); }
+    75%{ transform:translateX(7px) rotate(3deg); }
+  }
+  .bear .eyes-happy,.bear .mouth-happy{ display:none; }
+  .bear.happy .eyes-open,.bear.happy .mouth-neutral{ display:none; }
+  .bear.happy .eyes-happy,.bear.happy .mouth-happy{ display:block; }
+  .bear .blush{ opacity:.5; transition:opacity .3s; }
+  .bear.happy .blush{ opacity:1; }
+  .bear .eye-open{ animation:blink 4.5s infinite; transform-origin:center; transform-box:fill-box; }
+  @keyframes blink{
+    0%,92%,100%{ transform:scaleY(1); }
+    95%{ transform:scaleY(.08); }
+  }
+
+  .bear-heart{
+    position:absolute; top:6px; right:8px; font-size:30px;
+    opacity:0; transform:scale(0);
+    transition:.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .bear-wrap.love .bear-heart{ opacity:1; transform:scale(1) rotate(10deg); animation:heartbeat 1s .4s infinite; }
+  @keyframes heartbeat{ 0%,100%{ transform:scale(1) rotate(10deg);} 50%{ transform:scale(1.25) rotate(10deg);} }
+
+  /* ---------- ask page ---------- */
+  h1{
+    font-family:"Baloo 2","Comic Sans MS",cursive;
+    font-size:clamp(2rem,7vw,3.4rem);
+    font-weight:800;
+    color:#c2185b;
+    text-shadow:0 3px 0 #fff, 0 6px 18px rgba(194,24,91,.25);
+    line-height:1.1;
+    max-width:16ch;
+  }
+  .subtext{
+    font-size:clamp(1rem,2.6vw,1.2rem);
+    font-weight:600;
+    color:#a13a5f;
+    min-height:1.6em;
+    max-width:34ch;
+  }
+
+  .btn-row{
+    display:flex; align-items:center; justify-content:center;
+    gap:22px; flex-wrap:wrap; margin-top:6px;
+    min-height:90px;
+  }
+
+  button{
+    font-family:"Baloo 2","Comic Sans MS",cursive;
+    cursor:pointer; border:none; border-radius:999px;
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, background .25s;
+  }
+
+  #yesBtn{
+    font-size:1.5rem; font-weight:800;
+    padding:18px 52px;
+    color:#fff;
+    background:linear-gradient(180deg,#ff6fa5,#e84393);
+    box-shadow:0 10px 0 #c2185b, 0 16px 30px rgba(194,24,91,.35);
+    transform-origin:center;
+    animation:pulse 1.6s ease-in-out infinite;
+    z-index:5;
+  }
+  @keyframes pulse{
+    0%,100%{ filter:brightness(1); }
+    50%{ filter:brightness(1.08); }
+  }
+  #yesBtn:hover{ filter:brightness(1.08); }
+
+  #noBtn{
+    font-size:1.25rem; font-weight:700;
+    padding:16px 40px;
+    color:#a13a5f;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 8px 20px rgba(161,58,95,.22);
+    transform-origin:center;
+    z-index:6;
+  }
+  #noBtn.fixed{ position:fixed; }
+  #noBtn.gone{ opacity:0 !important; pointer-events:none; transform:scale(0) rotate(45deg) !important; transition:.5s ease; }
+
+  .extra-yes{
+    position:fixed; z-index:7;
+    font-size:1.05rem; font-weight:800;
+    padding:12px 26px; color:#fff;
+    background:linear-gradient(180deg,#ff8fb8,#e84393);
+    box-shadow:0 8px 18px rgba(194,24,91,.4);
+    animation:popIn .45s cubic-bezier(.34,1.56,.64,1) both, wiggle 1.4s .5s ease-in-out infinite;
+    transform-origin:center;
+  }
+  @keyframes popIn{ from{ transform:scale(0); } to{ transform:scale(1); } }
+  @keyframes wiggle{ 0%,100%{ rotate:0deg; } 50%{ rotate:-6deg; } }
+  .extra-yes:hover{ transform:scale(1.12) !important; }
+
+  .heart-burst{ position:fixed; pointer-events:none; z-index:20; font-size:24px; animation:burst 1.1s ease-out forwards; }
+  @keyframes burst{
+    0%{ transform:translate(0,0) scale(.4); opacity:1; }
+    100%{ transform:translate(var(--dx),var(--dy)) scale(1.5); opacity:0; }
+  }
+
+  /* ---------- date page ---------- */
+  .card{
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(6px);
+    border:3px solid #fff;
+    border-radius:34px;
+    padding:34px 30px;
+    max-width:640px;
+    width:100%;
+    box-shadow:0 24px 60px rgba(194,24,91,.22);
+  }
+  .card h2{
+    font-family:"Baloo 2",cursive;
+    font-size:clamp(1.6rem,5vw,2.3rem);
+    color:#c2185b;
+    margin-bottom:4px;
+  }
+  .card .hint{ color:#a13a5f; font-weight:600; margin-bottom:22px; }
+
+  .label{
+    font-family:"Baloo 2",cursive;
+    font-size:1.15rem; color:#c2185b;
+    margin:20px 0 10px; text-align:left;
+  }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-start; }
+  .chip{
+    font-family:"Quicksand",sans-serif;
+    font-weight:700; font-size:.95rem;
+    padding:11px 16px; border-radius:18px;
+    background:#ffe6f0; color:#a13a5f;
+    border:2px solid transparent;
+    box-shadow:0 4px 10px rgba(161,58,95,.12);
+    display:flex; flex-direction:column; align-items:center; line-height:1.15;
+    min-width:76px;
+  }
+  .chip small{ font-size:.72rem; font-weight:600; opacity:.75; text-transform:uppercase; letter-spacing:.5px; }
+  .chip.selected{
+    background:linear-gradient(180deg,#ff6fa5,#e84393);
+    color:#fff; border-color:#fff;
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 10px 20px rgba(194,24,91,.35);
+  }
+  .chip.row{ flex-direction:row; gap:8px; }
+
+  .time-custom{
+    display:flex; align-items:center; gap:10px; margin-top:12px;
+    font-weight:700; color:#a13a5f; font-size:.95rem;
+  }
+  .time-custom input{
+    font-family:inherit; font-size:1rem; font-weight:700;
+    padding:9px 14px; border-radius:14px; border:2px solid #ffb3cd;
+    background:#fff7fa; color:#c2185b;
+  }
+
+  .nudge{ color:#c2185b; font-weight:700; font-size:.92rem; min-height:1.3em; margin-top:14px; }
+  .shake{ animation:shake .4s ease; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+
+  .big-yes{
+    margin-top:24px;
+    font-size:1.35rem; font-weight:800;
+    padding:16px 44px; color:#fff;
+    background:linear-gradient(180deg,#ff6fa5,#e84393);
+    box-shadow:0 10px 0 #c2185b, 0 16px 28px rgba(194,24,91,.3);
+  }
+  .big-yes:hover{ transform:translateY(-3px); }
+
+  .mini-bear{ width:130px; height:145px; margin:0 auto 6px; }
+
+  .summary{
+    font-family:"Baloo 2",cursive;
+    font-size:clamp(1.3rem,4.5vw,1.8rem);
+    color:#c2185b; margin:8px 0 4px;
+  }
+  .ghost-btn{
+    background:#fff; color:#c2185b; font-weight:700;
+    padding:12px 28px; font-size:1rem;
+    box-shadow:0 6px 16px rgba(161,58,95,.2);
+    margin-top:16px;
+  }
+  .ghost-btn:hover{ transform:translateY(-3px); }
+
+  .confetti{ position:fixed; top:-40px; z-index:30; pointer-events:none; animation:fall linear forwards; }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(720deg); opacity:.9; }
+  }
+
+  .footer-note{ font-size:.85rem; font-weight:600; color:#b0567c; opacity:.85; }
+
+  @media (max-width:520px){
+    #yesBtn{ padding:16px 40px; font-size:1.3rem; }
+    #noBtn{ padding:14px 30px; }
+    .card{ padding:26px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-hearts" id="bgHearts" aria-hidden="true"></div>
+
+<!-- ============ PAGE 1 : THE QUESTION ============ -->
+<main class="page active" id="pageAsk">
+  <div class="bear-wrap" id="bearWrap">
+    <span class="bear-heart">💖</span>
+    <svg class="bear" id="bear" viewBox="0 0 220 250" role="img" aria-label="Cute pink teddy bear">
+      <!-- ears -->
+      <circle cx="52" cy="52" r="31" fill="#f78fb3"/>
+      <circle cx="52" cy="52" r="16" fill="#ffd9e8"/>
+      <circle cx="168" cy="52" r="31" fill="#f78fb3"/>
+      <circle cx="168" cy="52" r="16" fill="#ffd9e8"/>
+      <!-- body -->
+      <ellipse cx="110" cy="196" rx="60" ry="50" fill="#f78fb3"/>
+      <ellipse cx="110" cy="203" rx="36" ry="33" fill="#ffd9e8"/>
+      <!-- arms -->
+      <ellipse cx="44" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(18 44 182)"/>
+      <ellipse cx="176" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(-18 176 182)"/>
+      <!-- legs -->
+      <ellipse cx="72" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+      <ellipse cx="148" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+      <ellipse cx="72" cy="236" rx="14" ry="8" fill="#ffd9e8"/>
+      <ellipse cx="148" cy="236" rx="14" ry="8" fill="#ffd9e8"/>
+      <!-- heart on belly -->
+      <path d="M110 214c-9-7-16-12-16-19a8 8 0 0 1 16-3 8 8 0 0 1 16 3c0 7-7 12-16 19z" fill="#e84393" opacity=".85"/>
+      <!-- head -->
+      <ellipse cx="110" cy="98" rx="70" ry="62" fill="#f78fb3"/>
+      <!-- muzzle -->
+      <ellipse cx="110" cy="124" rx="36" ry="27" fill="#ffd9e8"/>
+      <!-- blush -->
+      <ellipse class="blush" cx="60" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+      <ellipse class="blush" cx="160" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+      <!-- eyes open -->
+      <g class="eyes-open">
+        <ellipse class="eye-open" cx="84" cy="94" rx="9" ry="11" fill="#4a1f33"/>
+        <ellipse class="eye-open" cx="136" cy="94" rx="9" ry="11" fill="#4a1f33"/>
+        <circle cx="87" cy="90" r="3.2" fill="#fff"/>
+        <circle cx="139" cy="90" r="3.2" fill="#fff"/>
+      </g>
+      <!-- eyes happy (^ ^) -->
+      <g class="eyes-happy" fill="none" stroke="#4a1f33" stroke-width="6" stroke-linecap="round">
+        <path d="M75 97q9-13 18 0"/>
+        <path d="M127 97q9-13 18 0"/>
+      </g>
+      <!-- nose -->
+      <path d="M101 115h18a5 5 0 0 1 4 8l-7 7a7 7 0 0 1-10 0l-7-7a5 5 0 0 1 4-8z" fill="#4a1f33"/>
+      <!-- mouth neutral (hopeful / slightly worried) -->
+      <path class="mouth-neutral" d="M100 138q10-7 20 0" fill="none" stroke="#4a1f33" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- mouth happy (big smile) -->
+      <path class="mouth-happy" d="M92 132q18 22 36 0" fill="none" stroke="#4a1f33" stroke-width="5" stroke-linecap="round"/>
+      <!-- waving arm -->
+      <ellipse id="waveArm" cx="176" cy="182" rx="21" ry="32" fill="#f78fb3" transform="rotate(-18 176 182)" style="transform-origin:176px 155px;"/>
+    </svg>
+  </div>
+
+  <h1 id="question">Would you date me?</h1>
+  <p class="subtext" id="subtext">Take your time… but the teddy is waiting 💗</p>
+
+  <div class="btn-row" id="btnRow">
+    <button id="yesBtn">Yes 💕</button>
+    <button id="noBtn">No</button>
+  </div>
+
+  <p class="footer-note">psst… the teddy really hopes you pick Yes 🧸</p>
+</main>
+
+<!-- ============ PAGE 2 : PICK THE DATE ============ -->
+<main class="page" id="pageDate">
+  <div class="card">
+    <div class="mini-bear">
+      <svg class="bear happy" viewBox="0 0 220 250" aria-hidden="true">
+        <circle cx="52" cy="52" r="31" fill="#f78fb3"/>
+        <circle cx="52" cy="52" r="16" fill="#ffd9e8"/>
+        <circle cx="168" cy="52" r="31" fill="#f78fb3"/>
+        <circle cx="168" cy="52" r="16" fill="#ffd9e8"/>
+        <ellipse cx="110" cy="196" rx="60" ry="50" fill="#f78fb3"/>
+        <ellipse cx="110" cy="203" rx="36" ry="33" fill="#ffd9e8"/>
+        <ellipse cx="44" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(18 44 182)"/>
+        <ellipse cx="176" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(-18 176 182)"/>
+        <ellipse cx="72" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+        <ellipse cx="148" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+        <ellipse cx="110" cy="98" rx="70" ry="62" fill="#f78fb3"/>
+        <ellipse cx="110" cy="124" rx="36" ry="27" fill="#ffd9e8"/>
+        <ellipse class="blush" cx="60" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+        <ellipse class="blush" cx="160" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+        <g class="eyes-happy" fill="none" stroke="#4a1f33" stroke-width="6" stroke-linecap="round">
+          <path d="M75 97q9-13 18 0"/><path d="M127 97q9-13 18 0"/>
+        </g>
+        <path d="M101 115h18a5 5 0 0 1 4 8l-7 7a7 7 0 0 1-10 0l-7-7a5 5 0 0 1 4-8z" fill="#4a1f33"/>
+        <path class="mouth-happy" d="M92 132q18 22 36 0" fill="none" stroke="#4a1f33" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h2>It's a date! 🗓️💕</h2>
+    <p class="hint">Okay, official planning time — pick the day &amp; time, teddy is already getting ready!</p>
+
+    <div class="label">📅 Which day?</div>
+    <div class="chips" id="dayChips"></div>
+
+    <div class="label">⏰ What time?</div>
+    <div class="chips" id="timeChips">
+      <button class="chip row" data-time="09:00">🌅 Morning <small>9:00 am</small></button>
+      <button class="chip row" data-time="12:30">☀️ Noon <small>12:30 pm</small></button>
+      <button class="chip row" data-time="15:00">🌤️ Afternoon <small>3:00 pm</small></button>
+      <button class="chip row" data-time="18:30">🌆 Evening <small>6:30 pm</small></button>
+      <button class="chip row" data-time="20:00">🌙 Night <small>8:00 pm</small></button>
+    </div>
+
+    <div class="time-custom">
+      <label for="customTime">…or pick your own:</label>
+      <input type="time" id="customTime">
+    </div>
+
+    <p class="nudge" id="nudge"></p>
+
+    <button class="big-yes" id="confirmBtn">It's a date! 💖</button>
+    <br>
+    <button class="ghost-btn" id="backBtn">← Ask me again</button>
+  </div>
+</main>
+
+<!-- ============ PAGE 3 : CONFIRMED ============ -->
+<main class="page" id="pageDone">
+  <div class="card" style="text-align:center;">
+    <div class="mini-bear">
+      <svg class="bear happy" viewBox="0 0 220 250" aria-hidden="true">
+        <circle cx="52" cy="52" r="31" fill="#f78fb3"/>
+        <circle cx="52" cy="52" r="16" fill="#ffd9e8"/>
+        <circle cx="168" cy="52" r="31" fill="#f78fb3"/>
+        <circle cx="168" cy="52" r="16" fill="#ffd9e8"/>
+        <ellipse cx="110" cy="196" rx="60" ry="50" fill="#f78fb3"/>
+        <ellipse cx="110" cy="203" rx="36" ry="33" fill="#ffd9e8"/>
+        <ellipse cx="44" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(18 44 182)"/>
+        <ellipse cx="176" cy="182" rx="21" ry="32" fill="#f47fa9" transform="rotate(-18 176 182)"/>
+        <ellipse cx="72" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+        <ellipse cx="148" cy="236" rx="28" ry="16" fill="#f47fa9"/>
+        <ellipse cx="110" cy="98" rx="70" ry="62" fill="#f78fb3"/>
+        <ellipse cx="110" cy="124" rx="36" ry="27" fill="#ffd9e8"/>
+        <ellipse class="blush" cx="60" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+        <ellipse class="blush" cx="160" cy="118" rx="14" ry="9" fill="#ff5c93"/>
+        <g class="eyes-happy" fill="none" stroke="#4a1f33" stroke-width="6" stroke-linecap="round">
+          <path d="M75 97q9-13 18 0"/><path d="M127 97q9-13 18 0"/>
+        </g>
+        <path d="M101 115h18a5 5 0 0 1 4 8l-7 7a7 7 0 0 1-10 0l-7-7a5 5 0 0 1 4-8z" fill="#4a1f33"/>
+        <path class="mouth-happy" d="M92 132q18 22 36 0" fill="none" stroke="#4a1f33" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h2>Yaaay! She said YES! 🎉</h2>
+    <p class="summary" id="summaryLine">…</p>
+    <p class="hint" id="doneHint">The teddy is doing a happy dance right now 🕺🧸</p>
+
+    <button class="big-yes" id="cantWaitBtn">Can't wait! 💗</button><br>
+    <button class="ghost-btn" id="changeBtn">Change plans 📅</button>
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- floating background hearts ---------------- */
+  const bg = document.getElementById('bgHearts');
+  const heartChars = ['💕','💗','💖','🌹','🧸','❤️','✨'];
+  for(let i=0;i<18;i++){
+    const h = document.createElement('span');
+    h.className = 'bg-heart';
+    h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.animationDuration = (10 + Math.random()*14) + 's';
+    h.style.animationDelay = (-Math.random()*20) + 's';
+    h.style.fontSize = (16 + Math.random()*22) + 'px';
+    bg.appendChild(h);
+  }
+
+  /* ---------------- elements ---------------- */
+  const pageAsk  = document.getElementById('pageAsk');
+  const pageDate = document.getElementById('pageDate');
+  const pageDone = document.getElementById('pageDone');
+
+  const yesBtn   = document.getElementById('yesBtn');
+  const noBtn    = document.getElementById('noBtn');
+  const btnRow   = document.getElementById('btnRow');
+  const bear     = document.getElementById('bear');
+  const bearWrap = document.getElementById('bearWrap');
+  const question = document.getElementById('question');
+  const subtext  = document.getElementById('subtext');
+
+  /* ---------------- the "No" game ---------------- */
+  let noCount = 0;
+  const MAX_NO = 6;
+  let yesScale = 1;
+
+  const noMessages = [
+    "No? Are you sure about that… 🥺",
+    "Hmm… the teddy is getting nervous!",
+    "The No button is starting to sweat 😅",
+    "Uh oh… it's getting smaller and smaller!",
+    "It's so tiny now, hard to even click it… 👀",
+    "Last chance for No… it's barely visible!",
+    "And just like that… the No button is GONE forever! 💕"
+  ];
+
+  const noSpotsTaken = [];
+
+  function randomSpot(el, pad){
+    const w = el.offsetWidth, h = el.offsetHeight;
+    let x, y, tries = 0;
+    do{
+      x = pad + Math.random() * Math.max(1, window.innerWidth  - w - pad*2);
+      y = pad + Math.random() * Math.max(1, window.innerHeight - h - pad*2);
+      tries++;
+    } while(tries < 12 && noSpotsTaken.some(s => Math.abs(s.x-x) < 90 && Math.abs(s.y-y) < 70));
+    noSpotsTaken.push({x:x, y:y});
+    if(noSpotsTaken.length > 6) noSpotsTaken.shift();
+    return {x:x, y:y};
+  }
+
+  function spawnExtraYes(){
+    if(document.querySelectorAll('.extra-yes').length >= 4) return;
+    const b = document.createElement('button');
+    b.className = 'extra-yes';
+    b.textContent = ['Yes 💕','Yes! 💗','Pick Yes 🥰','Yes 💖'][Math.floor(Math.random()*4)];
+    const pad = 14;
+    b.style.left = (pad + Math.random() * Math.max(1, window.innerWidth  - 160 - pad*2)) + 'px';
+    b.style.top  = (pad + Math.random() * Math.max(1, window.innerHeight - 70  - pad*2)) + 'px';
+    b.addEventListener('click', sayYes);
+    document.body.appendChild(b);
+  }
+
+  function heartBurstAt(x, y, n){
+    for(let i=0;i<n;i++){
+      const s = document.createElement('span');
+      s.className = 'heart-burst';
+      s.textContent = ['💖','💗','💕','✨','🌹'][Math.floor(Math.random()*5)];
+      s.style.left = x + 'px';
+      s.style.top  = y + 'px';
+      s.style.setProperty('--dx', (Math.random()*220-110) + 'px');
+      s.style.setProperty('--dy', (-60 - Math.random()*160) + 'px');
+      s.style.animationDelay = (i*0.04) + 's';
+      document.body.appendChild(s);
+      setTimeout(()=> s.remove(), 1400);
+    }
+  }
+
+  noBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(noCount >= MAX_NO) return;
+    noCount++;
+
+    question.textContent = ["Would you date me? 🥺","Are you sure? 🥺","Really really sure? 😢","Think about it… 🥺","You can't catch me that easy! 😜","The No button is scared! 😰"][noCount-1] || "Please say yes… 🥺";
+    subtext.textContent  = noMessages[noCount-1];
+
+    /* shrink the No button */
+    const s = Math.pow(0.72, noCount);
+    noBtn.style.transform = 'scale(' + s + ')';
+
+    /* teleport it to another part of the page */
+    noBtn.classList.add('fixed');
+    const spot = randomSpot(noBtn, 14);
+    noBtn.style.left = spot.x + 'px';
+    noBtn.style.top  = spot.y + 'px';
+
+    /* the Yes button grows + a new Yes button pops up somewhere */
+    yesScale = Math.min(yesScale * 1.2, 2.6);
+    yesBtn.style.transform = 'scale(' + yesScale + ')';
+    spawnExtraYes();
+
+    /* teddy reacts */
+    bear.classList.remove('shiver');
+    void bear.offsetWidth;
+    bear.classList.add('shiver');
+
+    heartBurstAt(e.clientX, e.clientY, 4);
+
+    if(noCount >= MAX_NO){
+      setTimeout(function(){
+        noBtn.classList.add('gone');
+        question.textContent = "So… would you date me? 💕";
+        subtext.textContent  = "There's only one button left now 😊";
+      }, 350);
+    }
+  });
+
+  /* ---------------- the "Yes" moment ---------------- */
+  let answered = false;
+  function sayYes(e){
+    if(answered) return;
+    answered = true;
+
+    const x = e && e.clientX ? e.clientX : window.innerWidth/2;
+    const y = e && e.clientY ? e.clientY : window.innerHeight/2;
+    heartBurstAt(x, y, 14);
+
+    /* teddy becomes HAPPY */
+    bear.classList.add('happy');
+    bearWrap.classList.add('love');
+    question.textContent = "SHE SAID YES! 🎉🧸";
+    subtext.textContent  = "The teddy is SO happy right now… let's plan your date! 💕";
+
+    noBtn.style.pointerEvents = 'none';
+    yesBtn.style.pointerEvents = 'none';
+
+    /* remove all the extra Yes buttons that popped up */
+    document.querySelectorAll('.extra-yes').forEach(function(b){
+      b.style.transition = '.3s ease';
+      b.style.transform = 'scale(0) rotate(45deg)';
+      b.style.opacity = '0';
+      setTimeout(function(){ b.remove(); }, 320);
+    });
+
+    confetti(40);
+
+    setTimeout(function(){
+      pageAsk.classList.remove('active');
+      pageDate.classList.add('active');
+      window.scrollTo(0,0);
+    }, 1500);
+  }
+  yesBtn.addEventListener('click', sayYes);
+
+  /* clicking the bear = it giggles */
+  bear.addEventListener('click', function(e){
+    e.stopPropagation();
+    bear.classList.remove('shiver');
+    void bear.offsetWidth;
+    bear.classList.add('shiver');
+    heartBurstAt(e.clientX, e.clientY, 5);
+  });
+
+  /* ---------------- page 2 : pick day & time ---------------- */
+  const dayChips   = document.getElementById('dayChips');
+  const timeChips  = document.getElementById('timeChips');
+  const customTime = document.getElementById('customTime');
+  const nudge      = document.getElementById('nudge');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const backBtn    = document.getElementById('backBtn');
+
+  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthsLong = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const daysLong = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  let pickedDay = null;   // Date object
+  let pickedTime = null;  // "HH:MM"
+
+  for(let i=1;i<=7;i++){
+    const d = new Date();
+    d.setDate(d.getDate()+i);
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.innerHTML = '<b>'+ weekdays[d.getDay()] +'</b><small>'+ months[d.getMonth()] +' '+ d.getDate() +'</small>';
+    chip.dataset.index = i;
+    chip.addEventListener('click', function(){
+      dayChips.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      chip.classList.add('selected');
+      pickedDay = d;
+      nudge.textContent = '';
+      heartBurstAtChip(chip);
+    });
+    dayChips.appendChild(chip);
+  }
+
+  timeChips.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      timeChips.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      chip.classList.add('selected');
+      pickedTime = chip.dataset.time;
+      customTime.value = '';
+      nudge.textContent = '';
+      heartBurstAtChip(chip);
+    });
+  });
+
+  customTime.addEventListener('input', function(){
+    if(customTime.value){
+      timeChips.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      pickedTime = customTime.value;
+      nudge.textContent = '';
+    }
+  });
+
+  function heartBurstAtChip(chip){
+    const r = chip.getBoundingClientRect();
+    heartBurstAt(r.left + r.width/2, r.top + r.height/2, 3);
+  }
+
+  function fmtTime(hhmm){
+    const parts = hhmm.split(':');
+    let h = parseInt(parts[0],10);
+    const m = parts[1];
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if(h === 0) h = 12;
+    return h + ':' + m + ' ' + ampm;
+  }
+
+  confirmBtn.addEventListener('click', function(){
+    if(!pickedDay){
+      nudge.textContent = 'Pick a day first, silly 💗';
+      dayChips.classList.remove('shake'); void dayChips.offsetWidth; dayChips.classList.add('shake');
+      return;
+    }
+    if(!pickedTime){
+      nudge.textContent = 'Now pick a time too 🕐';
+      timeChips.classList.remove('shake'); void timeChips.offsetWidth; timeChips.classList.add('shake');
+      return;
+    }
+
+    const line = daysLong[pickedDay.getDay()] + ', ' + monthsLong[pickedDay.getMonth()] + ' ' + pickedDay.getDate() + ' · ' + fmtTime(pickedTime);
+    document.getElementById('summaryLine').textContent = line;
+    document.getElementById('doneHint').textContent =
+      'The teddy is doing a happy dance right now 🕺🧸 — dress nicely!';
+
+    pageDate.classList.remove('active');
+    pageDone.classList.add('active');
+    window.scrollTo(0,0);
+    confetti(70);
+  });
+
+  backBtn.addEventListener('click', function(){
+    pageDate.classList.remove('active');
+    pageAsk.classList.add('active');
+    window.scrollTo(0,0);
+  });
+
+  document.getElementById('changeBtn').addEventListener('click', function(){
+    pageDone.classList.remove('active');
+    pageDate.classList.add('active');
+    window.scrollTo(0,0);
+  });
+
+  document.getElementById('cantWaitBtn').addEventListener('click', function(e){
+    heartBurstAt(e.clientX, e.clientY, 12);
+    confetti(30);
+    document.getElementById('doneHint').textContent = 'Same here!! 💖💖 See you soon~';
+  });
+
+  /* ---------------- confetti ---------------- */
+  function confetti(n){
+    const bits = ['💕','💗','💖','🎉','🌹','✨','🧸'];
+    for(let i=0;i<n;i++){
+      const c = document.createElement('span');
+      c.className = 'confetti';
+      c.textContent = bits[Math.floor(Math.random()*bits.length)];
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.fontSize = (14 + Math.random()*20) + 'px';
+      c.style.animationDuration = (2.6 + Math.random()*2.5) + 's';
+      c.style.animationDelay = (Math.random()*0.9) + 's';
+      document.body.appendChild(c);
+      setTimeout(()=> c.remove(), 6500);
+    }
+  }
+
+  /* keep buttons on screen if she resizes */
+  window.addEventListener('resize', function(){
+    if(noBtn.classList.contains('fixed') && !noBtn.classList.contains('gone')){
+      const pad = 14;
+      const x = Math.min(parseFloat(noBtn.style.left)||pad, window.innerWidth  - noBtn.offsetWidth  - pad);
+      const y = Math.min(parseFloat(noBtn.style.top) ||pad, window.innerHeight - noBtn.offsetHeight - pad);
+      noBtn.style.left = Math.max(pad, x) + 'px';
+      noBtn.style.top  = Math.max(pad, y) + 'px';
+    }
+  });
+})();
+</script>
+</body>
+</html>
